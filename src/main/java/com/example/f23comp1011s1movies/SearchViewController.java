@@ -1,5 +1,6 @@
 package com.example.f23comp1011s1movies;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -9,10 +10,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
+
 public class SearchViewController {
 
     @FXML
-    private ListView<?> listView;
+    private ListView<Movie> listView;
 
     @FXML
     private Label msgLabel;
@@ -45,5 +48,14 @@ public class SearchViewController {
         selectedVBox.setVisible(false);
         titlesVBox.setVisible(false);
         msgLabel.setVisible(false);
+    }
+
+    @FXML
+    private void searchForMovies(ActionEvent event) throws IOException, InterruptedException {
+        String movieName = searchTextField.getText().trim();
+        ApiResponse apiResponse = APIUtility.callAPI(movieName);
+        titlesVBox.setVisible(true);
+        listView.getItems().clear();
+        listView.getItems().addAll(apiResponse.getMovies());
     }
 }
