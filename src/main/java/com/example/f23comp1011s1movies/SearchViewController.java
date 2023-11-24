@@ -2,6 +2,7 @@ package com.example.f23comp1011s1movies;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
@@ -12,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class SearchViewController {
 
@@ -88,5 +91,11 @@ public class SearchViewController {
             msgLabel.setText("Enter a movie title and click \"Search\"");
         }
 
+    }
+
+    @FXML
+    void getMovieDetails(ActionEvent event) throws IOException {
+        Movie movieSelected = listView.getSelectionModel().getSelectedItem();
+        SceneChanger.changeScenes(event, "info-view.fxml", movieSelected.getImdbID());
     }
 }
