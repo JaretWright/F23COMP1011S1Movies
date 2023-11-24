@@ -1,7 +1,10 @@
 package com.example.f23comp1011s1movies;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -9,6 +12,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class APIUtility {
 
@@ -35,6 +41,26 @@ public class APIUtility {
 
         Gson gson = new Gson();
         return gson.fromJson(httpResponse.body(), ApiResponse.class);
+    }
 
+    public static List<Movie> getMoviesFromFile(String fileName)
+    {
+        Gson gson = new Gson();
+        //this is called try...with resources when we use the ().
+        //anything created inside the ( ) will automatically have the .close() called once
+        //the resource is not required.
+        try(
+                FileReader fileReader = new FileReader(fileName);
+                JsonReader jsonReader = new JsonReader(fileReader);
+                )
+        {
+            Movie[] movies= gson.fromJson(jsonReader, Movie[].class);
+            return Arrays.asList(movies);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
