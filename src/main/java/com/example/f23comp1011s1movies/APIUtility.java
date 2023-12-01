@@ -21,11 +21,11 @@ public class APIUtility {
     /**
      * This method will call the OMDB API with a movie title passed in as an argument
      */
-    public static ApiResponse callAPI(String movieName) throws IOException, InterruptedException {
+    public static ApiResponse callAPI(String movieName, int page) throws IOException, InterruptedException {
         //if we received "Star Wars", we need to translate that to be "Star%20Wars"
         movieName = movieName.replaceAll(" ", "%20");
 
-        String uri = "http://www.omdbapi.com/?apikey=4a1010ab&s="+movieName;
+        String uri = "http://www.omdbapi.com/?apikey=4a1010ab&s="+movieName+"&page="+page;
 
         //configure the environment to make a HTTP request (this includes an update to the
         //module-info.java file

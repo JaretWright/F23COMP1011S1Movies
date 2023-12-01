@@ -3,10 +3,7 @@ package com.example.f23comp1011s1movies;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -14,9 +11,15 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SearchViewController {
+
+    @FXML
+    private Button fetchAllButton;
 
     @FXML
     private ListView<Movie> listView;
@@ -44,6 +47,8 @@ public class SearchViewController {
 
     @FXML
     private VBox titlesVBox;
+
+    private int page, totalNumOfMovies;
 
     @FXML
     private void initialize()
@@ -75,14 +80,22 @@ public class SearchViewController {
 
     @FXML
     private void searchForMovies(ActionEvent event) throws IOException, InterruptedException {
+        page = 1;
         String movieName = searchTextField.getText().trim();
-        ApiResponse apiResponse = APIUtility.callAPI(movieName);
+        ApiResponse apiResponse = APIUtility.callAPI(movieName, page);
+        totalNumOfMovies = Integer.parseInt(apiResponse.getTotalResults());
+
         if (apiResponse.getMovies() != null)
         {
             titlesVBox.setVisible(true);
             listView.getItems().clear();
             listView.getItems().addAll(apiResponse.getMovies());
-            resultsMsgLabel.setText("Showing " + listView.getItems().size() + " of " +apiResponse.getTotalResults());
+
+            TreeSet<Movie> sortedMovieSet = new TreeSet<>();
+            sortedMovieSet.addAll(listView.getItems());
+            System.out.println(Integer.toString(sortedMovieSet.size()) + sortedMovieSet);
+
+            updateLabels();
         }
         else
         {
@@ -90,12 +103,25 @@ public class SearchViewController {
             msgLabel.setVisible(true);
             msgLabel.setText("Enter a movie title and click \"Search\"");
         }
+    }
 
+    private void updateLabels()
+    {
+        resultsMsgLabel.setText("Showing " + listView.getItems().size() + " of " +totalNumOfMovies);
+        if (listView.getItems().size()< totalNumOfMovies)
+            fetchAllButton.setVisible(true);
+        else
+            fetchAllButton.setVisible(false);
     }
 
     @FXML
     void getMovieDetails(ActionEvent event) throws IOException {
         Movie movieSelected = listView.getSelectionModel().getSelectedItem();
         SceneChanger.changeScenes(event, "info-view.fxml", movieSelected.getImdbID());
+    }
+
+    @FXML
+    void fetchAllMovies(ActionEvent event) {
+
     }
 }
