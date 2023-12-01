@@ -1,5 +1,6 @@
 package com.example.f23comp1011s1movies;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -121,7 +122,28 @@ public class SearchViewController {
     }
 
     @FXML
-    void fetchAllMovies(ActionEvent event) {
+    void fetchAllMovies()  {
+        Thread fetchThread = new Thread(()->{
+            progressBar.setVisible(true);
+            page++;
+            try {
+                ApiResponse apiResponse = APIUtility.callAPI(searchTextField.getText().trim(),page);
+                listView.getItems().addAll(apiResponse.getMovies());
 
+                Platform.runLater(()->{
+                    updateLabels();
+                    progressBar.setProgress((double)listView.getItems().size()/totalNumOfMovies);
+                });
+
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (listView.getItems().size()<totalNumOfMovies)
+                fetchAllMovies();
+            else
+                progressBar.setVisible(false);
+        });
+        fetchThread.start();
     }
 }
